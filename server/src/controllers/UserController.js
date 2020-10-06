@@ -119,7 +119,7 @@ module.exports = {
     async updateAvatar(request, response) {
         const { filename: key } = request.file;
 
-        promisify(fs.unlink)(path.resolve(__dirname, "..", "..", "tmp", "uploads", request.query.key))
+        promisify(fs.unlink)(path.resolve(__dirname, "../", "../", "tmp", "uploads", request.query.key))
 
         // console.log(fs.unlink);
 
