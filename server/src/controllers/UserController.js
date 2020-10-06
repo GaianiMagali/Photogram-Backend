@@ -6,6 +6,8 @@ const path = require("path");
 const { promisify } = require("util");
 
 const User = require("../models/User");
+const Photo = require("../models/Photo");
+const Follow = require("../models/Follow");
 
 const passwordHash = require('./utils/passwordHash');
 const passwordCompare = require('./utils/passwordCompare');
@@ -16,21 +18,49 @@ const generateToken = require("./utils/generateToken");
 module.exports = {
     async show(request, response) {
         const { username } = request.params;
+        const { page, pageSize } = request.query;
+
 
         //Paginacion
-
         const user = await User.findOne({
             where: {
                 username
             },
-            attributes: { exclude: ["password", "updatedAt"] }
+            attributes: { exclude: ["password", "updatedAt"] },
+            include: [
+                {
+                    association: "photosUploads",
+                    separete: true,
+                    offset: page * pageSize,
+                    limit: pageSize
+                }
+            ],
+            group: ["User.id"]
         })
 
-        if (!user) return response.status(404).send({
-            message: "Usuario no encontrado"
+        if (!user) return response.status(404).send({ message: "Usuario no encontrado" })
+
+        const count_photos = await Photo.findAll({ where: { user_id: user.id } });
+        const count_follows = await Follow.findAll({ where: { user_from: user.id } });
+        const count_followers = await Follow.findAll({ where: { user_to: user.id } });
+
+        let isProfile = false;
+        if (user.id === request.userId) isProfile = true;
+
+        let isFollow = await Follow.findOne({
+            where: {
+                [Sequelize.Op.and]: [{ user_from: request.userId }, { user_to: request.userId }]
+            }
         })
 
-        return response.json(user);
+        return response.json({
+            user,
+            count_photos: count_photos.length,
+            count_follows: count_follows.length,
+            count_followers: count_followers.length,
+            isProfile,
+            isFollow: isFollow ? true : false
+        });
     },
 
     async store(request, response) {
