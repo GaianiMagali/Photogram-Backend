@@ -45,8 +45,8 @@ module.exports = {
 
         if (!photo) return response.status(400).send({ message: "Foto no encontrada" })
 
-        let isAutor = false;
-        if (request.userId === photo.user_id) isAutor = true;
+        let isAuthor = false;
+        if (request.userId === photo.user_id) isAuthor = true;
 
         let isLiked = false;
         let like = await Like.findOne({
@@ -57,7 +57,7 @@ module.exports = {
 
         if (like) isLiked = true;
 
-        return response.json({ photo, isAutor, isLiked });
+        return response.json({ photo, isAuthor, isLiked });
     },
 
     async store(request, response) {
@@ -101,14 +101,14 @@ module.exports = {
             order: [["createdAt", "desc"]]
         });
 
-        let isAutor = false;
-        if (photo.user_id === request.userId) isAutor = true;
+        let isAuthor = false;
+        if (photo.user_id === request.userId) isAuthor = true;
         let isLiked = false;
         photo.getLikes.map(like => {
             if (like.user_id === request.userId) isLiked = true;
         });
 
-        return response.json({ isAutor, isLiked, photo });
+        return response.json({ isAuthor, isLiked, photo });
     },
 
     async destroy(request, response) {

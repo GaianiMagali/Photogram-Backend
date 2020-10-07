@@ -3,6 +3,7 @@ const Comment = require("../models/Comment");
 const Photo = require("../models/Photo");
 
 module.exports = {
+    
     async store(request, response) {
         const { body } = request.body;
         const { photo: photo_id } = request.params;

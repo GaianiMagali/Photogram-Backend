@@ -1,9 +1,12 @@
 const { Router } = require("express");
+
 const routes = Router();
 
 const authMiddleware = require("../middleware/auth");
-const FollowController = require("../controllers/FollowController");
+const SearchController = require("../controllers/SearchController");
 
-routes.post("/:user_id", authMiddleware, FollowController.store)
+
+routes.get("/:term", authMiddleware, SearchController.search)
+
 
 module.exports = routes;

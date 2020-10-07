@@ -3,14 +3,16 @@ const routes = Router();
 const multer = require("multer");
 const multerconfig = require("../config/multer");
 
+const authMiddleware = require("../middleware/auth");
 const PhotoController = require('../controllers/PhotoController');
 
-const authMiddleware = require("../middleware/auth");
+//authMiddleware lo usan todas las rutas
+routes.use(authMiddleware);
 
-routes.get("/:id", authMiddleware, PhotoController.show);
+routes.get("/:id", PhotoController.show);
 
-routes.post('/', authMiddleware, multer(multerconfig).single("file"), PhotoController.store);
+routes.post('/', multer(multerconfig).single("file"), PhotoController.store);
 
-routes.delete('/:id', authMiddleware, PhotoController.destroy);
+routes.delete('/:id', PhotoController.destroy);
 
 module.exports = routes;

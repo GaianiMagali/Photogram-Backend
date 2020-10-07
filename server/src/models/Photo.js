@@ -27,7 +27,6 @@ class Photo extends Model {
             as: "getComments"
         })
     }
-
 }
 
 module.exports = Photo;
