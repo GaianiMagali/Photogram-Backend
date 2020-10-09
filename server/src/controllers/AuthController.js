@@ -5,6 +5,15 @@ const passwordCompare = require("./utils/passwordCompare");
 const generateToken = require("./utils/generateToken");
 
 module.exports = {
+    async me(request, response) {
+
+        const user = await User.findByPk(request.userId, {
+            attributes: ['id', 'username', 'name', 'avatar_url']
+        });
+
+        return response.json(user);
+    },
+
     async login(request, response) {
         const { username, password } = request.body;
 
