@@ -3,7 +3,7 @@ const User = require("../models/User");
 
 module.exports = {
     async search(request, response) {
-        const { term } = request.params;
+        const { term } = request.query;
 
         const users = await User.findAll({
             attributes: ["id", "username", "name", "avatar_url"],
