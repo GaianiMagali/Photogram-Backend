@@ -20,7 +20,6 @@ module.exports = {
         const { username } = request.params;
         const { page, pageSize } = request.query;
 
-
         //Paginacion
         const user = await User.findOne({
             where: {
@@ -49,7 +48,7 @@ module.exports = {
 
         let isFollow = await Follow.findOne({
             where: {
-                [Sequelize.Op.and]: [{ user_from: request.userId }, { user_to: request.userId }]
+                [Sequelize.Op.and]: [{ user_from: request.userId }, { user_to: user.id }]
             }
         })
 

@@ -26,7 +26,7 @@ module.exports = {
                 user_from: request.userId,
                 user_to: user.id
             })
-            return response.send()
+            return response.status(201).send()
         }
     }
 }
