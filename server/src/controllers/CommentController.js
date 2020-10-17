@@ -2,8 +2,28 @@ const { validationResult } = require("express-validator");
 const Comment = require("../models/Comment");
 const Photo = require("../models/Photo");
 
+
 module.exports = {
-    
+
+    async show(request, response) {
+        const { photo_id } = request.params;
+
+        const photo = await Photo.findByPk(photo_id, {
+            attributes: {
+                exclude: ["updatedAt"]
+            },
+            include: {
+                association: "getComments",
+                attributes: ["id", "user_id", "body", "createdAt"],
+                include: {
+                    association: "postedBy",
+                    attributes: ["username", "avatar_url"]
+                }
+            }
+        })
+        response.send(photo);
+    },
+
     async store(request, response) {
         const { body } = request.body;
         const { photo: photo_id } = request.params;

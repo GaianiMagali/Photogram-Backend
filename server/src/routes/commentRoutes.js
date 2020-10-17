@@ -8,6 +8,8 @@ const CommentController = require("../controllers/CommentController");
 //authMiddleware lo usan todas las rutas
 routes.use(authMiddleware);
 
+routes.get("/:photo_id", CommentController.show);
+
 routes.post("/:photo", ValidationComment.comment, CommentController.store);
 
 routes.put("/:idComment", ValidationComment.comment, CommentController.update);
