@@ -62,6 +62,32 @@ module.exports = {
         });
     },
 
+    async showUserId(request, response) {
+        const { id } = request.params;
+        console.log(id);
+        const { page, pageSize } = request.query;
+
+        //Paginacion
+        const user = await User.findOne({
+            where: {
+                id
+            },
+            attributes: { exclude: ["password", "updatedAt"] },
+            group: ["User.id"]
+        })
+
+        if (!user) return response.status(404).send({ message: "Usuario no encontrado" })
+
+
+        let isProfile = false;
+        if (user.id === request.userId) isProfile = true;
+
+        return response.json({
+            user,
+            isProfile,
+        });
+    },
+
     async store(request, response) {
         const { name, email, username, password } = request.body;
 

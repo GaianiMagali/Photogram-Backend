@@ -11,6 +11,8 @@ const ValidationsUser = require("../validations/validationUser");
 
 routes.get('/:username', authMiddleware, UserController.show);
 
+routes.get('/user/:id', authMiddleware,UserController.showUserId);
+
 routes.post('/', ValidationsUser.withPassword, UserController.store);
 
 routes.put('/', authMiddleware, ValidationsUser.withoutPassword, UserController.update);
