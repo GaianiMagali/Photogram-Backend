@@ -1,6 +1,10 @@
 const Sequelize = require("sequelize");
 const { validationResult } = require("express-validator");
 
+const jwt = require("jsonwebtoken");
+
+const { sendEmail } = require("./utils/nodemailer");
+
 const fs = require("fs");
 const path = require("path");
 const { promisify } = require("util");
@@ -65,9 +69,7 @@ module.exports = {
     async showUserId(request, response) {
         const { id } = request.params;
         console.log(id);
-        const { page, pageSize } = request.query;
 
-        //Paginacion
         const user = await User.findOne({
             where: {
                 id
@@ -148,25 +150,87 @@ module.exports = {
         return response.json({ message: "Actualizado correctamente" })
     },
 
+    async destroy(request, response) {
+        const { id } = request.params;
+        console.log(id);
+
+        const user = await User.findByPk(id);
+
+        console.log(user);
+
+        if (!user) return response.status(400).send({ message: "El usuario no existe" });
+
+        let isProfile = false;
+        if (user.id === request.userId) isProfile = true;
+
+        await user.destroy();
+
+        return response.send();
+    },
+
+    async forgotPassword(req, res) {
+
+        if (!req.body) return res.status(400).json({ message: "No request body" });
+        if (!req.body.email)
+            return res.status(400).json({ message: "No Email in request body" });
+
+        console.log("forgot password finding user with that email");
+        const { email } = req.body;
+        console.log("signin req.body", email);
+        // find the user based on email
+
+        const user = await User.findOne({ where: { email } });
+
+        // if err or no user
+        if (!user) return res.status("401").json({
+            message: "User with that email does not exist!"
+        });
+
+        //generate a token with user id and secret
+        const token = jwt.sign(
+            { _id: user.id, iss: "NODEAPI" },
+            process.env.SIGNATURE_TOKEN
+        );
+
+        // email data
+        const emailData = {
+            from: "noreply@node-react.com",
+            to: email,
+            subject: "Password Reset Instructions",
+            text: `Please use the following link to reset your password: ${process.env.CLIENT_URL
+                }/reset-password/${token}`,
+            html: `<p>Please use the following link to reset your password:</p> <p>${process.env.CLIENT_URL
+                }/reset-password/${token}</p>`
+        };
+
+        await User.update({ reset_password_link: token }, { where: { id: user.id } });
+
+        sendEmail(emailData);
+        return res.status(200).json({
+            message: `Email has been sent to ${email}. Follow the instructions to reset your password.`
+        });
+    },
+
     async updatePassword(request, response) {
-        const { password_old, password, password_confirm } = request.body;
+        const { reset_password_link, password } = request.body;
 
         const errors = validationResult(request);
         if (!errors.isEmpty()) {
             return response.status(400).json({ errors: errors.array() })
         }
 
-        const user = await User.findByPk(request.userId);
+        const user = await User.findOne({ where: { reset_password_link } });
 
-        if (!(await passwordCompare(password_old, user.password))) return response.status(400).json({ message: "No coincide la contraseña antigua" })
 
-        if (password !== password_confirm) return response.status(400).json({ message: "Los passwords no son iguales" })
+        if(!user) return response.status("401").json({
+            error: "Link invalido!"
+        });
 
         const passwordHashed = await passwordHash(password);
 
         await User.update(
             { password: passwordHashed },
-            { where: { id: request.userId } })
+            { where: { reset_password_link } })
 
         return response.json({ message: "Se cambio la contraseña correctamente" })
     },
@@ -174,7 +238,7 @@ module.exports = {
     async updateAvatar(request, response) {
         const { filename: key } = request.file;
 
-        promisify(fs.unlink)(path.resolve(__dirname, "../", "../", "tmp", "uploads", request.query.key))
+        // promisify(fs.unlink)(path.resolve(__dirname, "../", "../", "tmp", "uploads", request.query.key))
 
         // console.log(fs.unlink);
 

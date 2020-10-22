@@ -13,8 +13,6 @@ const ValidationsUser = {
     ],
     password: [
         check('password', "El password debe ser minimo de 6 caracteres").isLength({ min: 6 }),
-
-        check('password_confirm', "El password debe ser minimo de 6 caracteres").isLength({ min: 6 })
     ]
 }
 

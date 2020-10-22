@@ -11,6 +11,7 @@ class User extends Model {
             phone: DataTypes.STRING,
             key: DataTypes.STRING,
             avatar_url: DataTypes.STRING,
+            reset_password_link: DataTypes.STRING
         }, {
             sequelize
         }

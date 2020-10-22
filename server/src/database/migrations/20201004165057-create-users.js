@@ -38,15 +38,19 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
       },
-      avatar_url:{
+      avatar_url: {
         type: Sequelize.STRING,
         allowNull: true
       },
-      created_at:{
+      reset_password_link: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      created_at: {
         type: Sequelize.DATE,
         allowNull: false
       },
-      updated_at:{
+      updated_at: {
         type: Sequelize.DATE,
         allowNull: false
       },
