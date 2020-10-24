@@ -19,7 +19,7 @@ routes.put('/', authMiddleware, ValidationsUser.withoutPassword, UserController.
 
 routes.delete('/user/:id', authMiddleware, UserController.destroy);
 
-routes.put("/password-update", authMiddleware, ValidationsUser.password, UserController.updatePassword);
+routes.put("/password-update", ValidationsUser.password, UserController.updatePassword);
 
 routes.put("/forgot-password", UserController.forgotPassword)
 

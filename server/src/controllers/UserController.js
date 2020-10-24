@@ -220,7 +220,7 @@ module.exports = {
         }
 
         const user = await User.findOne({ where: { reset_password_link } });
-
+        console.log(user);
 
         if(!user) return response.status("401").json({
             error: "Link invalido!"
@@ -232,7 +232,7 @@ module.exports = {
             { password: passwordHashed },
             { where: { reset_password_link } })
 
-        return response.json({ message: "Se cambio la contraseña correctamente" })
+        return response.json({ message: "Se cambio la contraseña correctamente!" })
     },
 
     async updateAvatar(request, response) {
