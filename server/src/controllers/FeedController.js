@@ -33,7 +33,7 @@ module.exports = {
         })
 
         let photos = await Photo.findAll({
-            offset: page * pageSize,
+            offset: (page - 1) * pageSize,
             limit: pageSize,
             attributes: {
                 exclude: ["updatedAt"]
@@ -81,8 +81,11 @@ module.exports = {
         })
 
         response.header("X-Total-Count", count);
-
-        return response.json(newArray);
+        console.log(count);
+        return response.json({
+            totalFeeds: count,
+            feeds: newArray
+        });
     },
 
     async showFollow(request, response) {
