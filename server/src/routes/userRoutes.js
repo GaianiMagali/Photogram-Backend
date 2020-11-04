@@ -25,4 +25,6 @@ routes.put("/forgot-password", UserController.forgotPassword)
 
 routes.put("/avatar", authMiddleware, multer(multerconfig).single("file"), UserController.updateAvatar);
 
+routes.put("/avatarDelete", authMiddleware, UserController.deleteAvatar)
+
 module.exports = routes;

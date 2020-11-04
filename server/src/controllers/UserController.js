@@ -5,17 +5,15 @@ const jwt = require("jsonwebtoken");
 
 const { sendEmail } = require("./utils/nodemailer");
 
-const fs = require("fs");
-const path = require("path");
-const { promisify } = require("util");
+// const fs = require("fs");
+// const path = require("path");
+// const { promisify } = require("util");
 
 const User = require("../models/User");
 const Photo = require("../models/Photo");
 const Follow = require("../models/Follow");
 
 const passwordHash = require('./utils/passwordHash');
-const passwordCompare = require('./utils/passwordCompare');
-
 const generateToken = require("./utils/generateToken");
 
 
@@ -68,7 +66,6 @@ module.exports = {
 
     async showUserId(request, response) {
         const { id } = request.params;
-        console.log(id);
 
         const user = await User.findOne({
             where: {
@@ -183,7 +180,7 @@ module.exports = {
 
         // if err or no user
         if (!user) return res.status("401").json({
-            message: "User with that email does not exist!"
+            message: "El usuario con este mail no existe!"
         });
 
         //generate a token with user id and secret
@@ -207,7 +204,7 @@ module.exports = {
 
         sendEmail(emailData);
         return res.status(200).json({
-            message: `Email has been sent to ${email}. Follow the instructions to reset your password.`
+            message: `El mail ha sido enviado a ${email}. Siga las instrucciones para resetear su password.`
         });
     },
 
@@ -222,8 +219,8 @@ module.exports = {
         const user = await User.findOne({ where: { reset_password_link } });
         console.log(user);
 
-        if(!user) return response.status("401").json({
-            error: "Link invalido!"
+        if (!user) return response.status("401").json({
+            error: "Enlace invalido!"
         });
 
         const passwordHashed = await passwordHash(password);
@@ -255,5 +252,20 @@ module.exports = {
         );
 
         return response.json({ avatar_url: url });
+    },
+
+    async deleteAvatar(request, response) {
+
+        await User.update(
+            {
+                key: null,
+                avatar_url: null
+            },
+            {
+                where: { id: request.userId }
+            }
+        );
+
+        return response.send();
     }
-};
+}

@@ -8,5 +8,6 @@ const ValidationAuth = require("../validations/validationAuth")
 
 routes.post('/', ValidationAuth.login, AuthController.login);
 routes.get('/me',authMiddleware, AuthController.me);
+routes.post('/authWithGoogle', AuthController.authWithGoogle)
 
 module.exports = routes;
