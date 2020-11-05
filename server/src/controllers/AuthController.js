@@ -4,8 +4,6 @@ const { validationResult } = require("express-validator");
 const passwordCompare = require("./utils/passwordCompare");
 const generateToken = require("./utils/generateToken");
 
-const jwt = require("jsonwebtoken");
-
 const _ = require("lodash");
 
 module.exports = {

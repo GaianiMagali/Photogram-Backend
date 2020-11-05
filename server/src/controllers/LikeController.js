@@ -2,7 +2,7 @@ const { Op } = require("sequelize");
 
 const Like = require("../models/Like");
 const Photo = require("../models/Photo");
-
+    
 module.exports = {
     async store(request, response) {
         const { photo: photoId } = request.params;
@@ -24,7 +24,7 @@ module.exports = {
         if (!like) {
             let newLike = await Like.create({
                 user_id: userId,
-                photo_id: photo.id
+                photo_id: photo.id,
             });
             return response.json(newLike);
         } else {
@@ -33,4 +33,3 @@ module.exports = {
         }
     }
 };
-
